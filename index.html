@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lighcon: Project</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        .chart-container {
+            position: relative;
+            margin: auto;
+            height: 40vh;
+            width: 100%;
+            max-width: 500px;
+            max-height: 400px;
+        }
+
+        .flow-arrow {
+            font-size: 2rem;
+            line-height: 1;
+            color: #6B7280;
+        }
+
+        .flow-box {
+            border: 1px solid #374151;
+            padding: 1rem;
+            text-align: center;
+            border-radius: 0.75rem;
+            background-color: #1F2937;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px 2px var(--glow-color, transparent);
+        }
+
+        .flow-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1), 0 0 20px 5px var(--glow-color, transparent);
+        }
+
+        .animated-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .animated-section.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .glow-text-white {
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
+        }
+
+        .section-glow {
+            transition: box-shadow 0.3s ease-in-out;
+            box-shadow: 0 0 15px 3px var(--glow-color, rgba(156, 163, 175, 0.1));
+        }
+
+        .section-glow:hover {
+            box-shadow: 0 0 25px 8px var(--glow-color, rgba(156, 163, 175, 0.15));
+        }
+
+        /* --- Carousel Styles --- */
+        .carousel-container {
+            perspective: 1200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 1rem 0;
+        }
+
+        .carousel {
+            position: relative;
+            width: 400px;
+            height: 260px;
+            transform-style: preserve-3d;
+            transition: transform 0.5s;
+        }
+
+        .carousel-card {
+            position: absolute;
+            width: 400px;
+            height: 230px;
+            top: 15px;
+            left: 0;
+            background-color: #1F2937;
+            border-radius: 0.75rem;
+            border: 1px solid #374151;
+            overflow: hidden;
+            transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out, filter 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
+            display: flex;
+            align-items: center;
+            padding: 1.5rem;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
+        .carousel-card.active {
+            transform: translateZ(0);
+            opacity: 1;
+            filter: blur(0);
+            cursor: default;
+            box-shadow: 0 0 25px 5px rgba(255, 255, 255, 0.1);
+        }
+
+        .carousel-card.next {
+            transform: translateX(220px) translateZ(-120px) rotateY(-25deg);
+            opacity: 0.7;
+            filter: blur(2px);
+            cursor: pointer;
+        }
+
+        .carousel-card.prev {
+            transform: translateX(-220px) translateZ(-120px) rotateY(25deg);
+            opacity: 0.7;
+            filter: blur(2px);
+            cursor: pointer;
+        }
+
+        .carousel-card.far-next {
+            transform: translateX(320px) translateZ(-300px) rotateY(-35deg);
+            opacity: 0;
+            filter: blur(4px);
+        }
+
+        .carousel-card.far-prev {
+            transform: translateX(-320px) translateZ(-300px) rotateY(35deg);
+            opacity: 0;
+            filter: blur(4px);
+        }
+
+        .carousel-nav {
+            margin-top: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .carousel-dots {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .carousel-dot {
+            width: 10px;
+            height: 10px;
+            background-color: #4B5563;
+            border-radius: 50%;
+            transition: background-color 0.3s;
+            cursor: pointer;
+        }
+
+        .carousel-dot.active {
+            background-color: #FFFFFF;
+        }
+
+        /* --- Background Animation --- */
+        .laser-progress-bar {
+            position: fixed;
+            top: 0;
+            width: 30px;
+            height: 0;
+            /* Starts at 0 height */
+            background: #FFFFFF;
+            box-shadow: 0 0 15px 5px rgba(255, 255, 255, 0.3), 0 0 25px 10px rgba(255, 255, 255, 0.2);
+            z-index: 0;
+            overflow: visible;
+            /* Allow tip to show */
+        }
+
+        #laser-progress-bar-left {
+            left: 30px;
+        }
+
+        #laser-progress-bar-right {
+            right: 30px;
+        }
+
+        .laser-initial-animation {
+            animation: initial-laser-fall 1.2s ease-out forwards;
+        }
+
+        .binary-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 102.04%;
+            overflow: hidden;
+            z-index: 3;
+        }
+
+        .binary-stream-content {
+            position: absolute;
+            width: 100%;
+            animation: binary-fall 20s linear infinite;
+            /* Slower animation */
+            color: #000;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 20px;
+            font-weight: bold;
+            text-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+            /* Black glow */
+            text-align: center;
+            line-height: 1.5;
+            /* Vertical spacing */
+            letter-spacing: 1.5px;
+            /* Horizontal spacing */
+        }
+
+        .laser-tip {
+            position: absolute;
+            bottom: -15px;
+            /* Position at the tip */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #FFFFFF;
+            /* Pure white sphere */
+            animation: pulse 2s infinite;
+            transition: opacity 0.3s ease-out;
+        }
+
+        .laser-tip.hidden {
+            opacity: 0;
+        }
+
+        .blast-effect {
+            position: absolute;
+            bottom: -25px;
+            left: 60%;
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 50%;
+            transform: translateX(-50%) scale(0);
+            opacity: 0;
+        }
+
+        .blast-effect.active {
+            animation: blast 0.6s ease-out forwards;
+        }
+
+        @keyframes binary-fall {
+            from {
+                transform: translateY(-50%);
+            }
+
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes initial-laser-fall {
+            from {
+                height: 0;
+            }
+
+            to {
+                height: 75vh;
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 10px 5px rgba(255, 255, 255, 0.3), 0 0 20px 10px rgba(255, 255, 255, 0.2);
+            }
+
+            50% {
+                box-shadow: 0 0 20px 10px rgba(255, 255, 255, 0.4), 0 0 40px 20px rgba(255, 255, 255, 0.3);
+            }
+
+            100% {
+                box-shadow: 0 0 10px 5px rgba(255, 255, 255, 0.3), 0 0 20px 10px rgba(255, 255, 255, 0.2);
+            }
+        }
+
+        @keyframes blast {
+            0% {
+                transform: translateX(-50%) scale(1);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: translateX(-50%) scale(15);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-900 text-gray-300">
+
+    <div id="laser-progress-bar-left" class="laser-progress-bar">
+        <div class="binary-container"></div>
+        <div class="laser-tip"></div>
+        <div class="blast-effect"></div>
+    </div>
+    <div id="laser-progress-bar-right" class="laser-progress-bar">
+        <div class="binary-container"></div>
+        <div class="laser-tip"></div>
+        <div class="blast-effect"></div>
+    </div>
+
+    <div class="container mx-auto p-4 md:p-8 relative z-10">
+
+        <header class="relative text-center py-20 md:py-32 mb-16 rounded-lg border border-gray-700 section-glow"
+            style="--glow-color: rgba(255, 255, 255, 0.05);">
+            <div class="relative">
+                <h1 class="text-4xl md:text-6xl font-black text-white glow-text-white leading-tight">What if the light
+                    above you could send data?</h1>
+                <p class="text-lg md:text-xl font-semibold text-gray-300 mt-6 max-w-3xl mx-auto">Imagine internet that’s
+                    faster, more secure, and immune to interference — all from the lamps in your room.</p>
+            </div>
+        </header>
+
+        <!-- What is Li-Fi section -->
+        <section id="what-is-lifi" class="mb-24 animated-section">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-white glow-text-white">LiFi Technology - Faster, Safer, Smarter Connectivity</h2>
+                <p class="mt-4 text-lg text-gray-400 max-w-3xl mx-auto">Li-Fi, or Light Fidelity, is a revolutionary
+                    wireless technology that transmits data using light, turning every light source into a potential
+                    ultra-fast, secure internet router.</p>
+            </div>
+            <div class="bg-gray-800 border border-gray-700 p-8 rounded-xl shadow-lg max-w-xl mx-auto section-glow"
+                style="--glow-color: rgba(255, 255, 255, 0.1);">
+                <div class="grid grid-cols-1 gap-4 items-center text-center">
+                    <div class="flow-box" style="--glow-color: rgba(255, 255, 255, 0.2);"><span
+                            class="text-4xl">💡</span>
+                        <h4 class="font-bold mt-2 text-white">1. LED Light Source</h4>
+                        <p class="text-sm text-gray-400">A standard LED bulb is modulated at high speeds, invisible to
+                            the eye.</p>
+                    </div>
+                    <div class="text-center flow-arrow">↓</div>
+                    <div class="flow-box" style="--glow-color: rgba(255, 255, 255, 0.2);"><span
+                            class="text-4xl">⚡</span>
+                        <h4 class="font-bold mt-2 text-white">2. Data Transmission</h4>
+                        <p class="text-sm text-gray-400">The light carries data as binary code (on/off signals).</p>
+                    </div>
+                    <div class="text-center flow-arrow">↓</div>
+                    <div class="flow-box" style="--glow-color: rgba(255, 255, 255, 0.2);"><span
+                            class="text-4xl">💻</span>
+                        <h4 class="font-bold mt-2 text-white">3. Receiver Device</h4>
+                        <p class="text-sm text-gray-400">A photodiode receives the light and converts it back into data.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Benefits section -->
+        <section id="benefits" class="mb-24 animated-section">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-white glow-text-white">The Benefits of Li-Fi Technology</h2>
+                <p class="mt-4 text-lg text-gray-400 max-w-3xl mx-auto">Li-Fi offers transformative advantages over
+                    traditional wireless technologies like Wi-Fi.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                <div class="bg-gray-800 border border-gray-700 p-8 rounded-xl transition-all duration-300 hover:shadow-xl hover:-translate-y-2 section-glow"
+                    style="--glow-color: rgba(255, 255, 255, 0.1);">
+                    <div class="text-6xl mb-4">🚀</div>
+                    <h3 class="text-xl font-bold mb-2 text-white glow-text-white">Unmatched Speed</h3>
+                    <p class="text-gray-400">Offers significantly higher data transmission speeds than Wi-Fi by
+                        utilizing the vast, unregulated light spectrum.</p>
+                </div>
+                <div class="bg-gray-800 border border-gray-700 p-8 rounded-xl transition-all duration-300 hover:shadow-xl hover:-translate-y-2 section-glow"
+                    style="--glow-color: rgba(255, 255, 255, 0.1);">
+                    <div class="text-6xl mb-4">🛡️</div>
+                    <h3 class="text-xl font-bold mb-2 text-white glow-text-white">Superior Security</h3>
+                    <p class="text-gray-400">Light cannot pass through opaque walls, making the network physically
+                        secure and immune to external hacking attempts.</p>
+                </div>
+                <div class="bg-gray-800 border border-gray-700 p-8 rounded-xl transition-all duration-300 hover:shadow-xl hover:-translate-y-2 section-glow"
+                    style="--glow-color: rgba(255, 255, 255, 0.1);">
+                    <div class="text-6xl mb-4">📡</div>
+                    <h3 class="text-xl font-bold mb-2 text-white glow-text-white">No Interference</h3>
+                    <p class="text-gray-400">Operates without radio frequency signals, making it ideal for environments
+                        sensitive to RF interference like hospitals and airplanes.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Real-world problem section -->
+        <section id="real-world-problem" class="mb-24 animated-section">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-white glow-text-white">The Big Picture: A Global Challenge</h2>
+                <p class="mt-4 text-lg text-gray-400 max-w-3xl mx-auto">Li-Fi technology is powerful enough to tackle
+                    massive, real-world infrastructure problems.</p>
+            </div>
+            <div class="bg-gray-800 border border-gray-700 p-8 rounded-xl shadow-lg section-glow"
+                style="--glow-color: rgba(255, 255, 255, 0.1);">
+                <h3 class="text-2xl font-bold text-white mb-4 text-center glow-text-white">Deployment Cost & Difficulty
+                    Comparison</h3>
+                <div class="chart-container mx-auto h-[40vh]">
+                    <canvas id="ruralProblemChart"></canvas>
+                </div>
+                <p class="text-center text-sm text-gray-500 mt-2">Relative cost and complexity of connecting remote
+                    locations.</p>
+            </div>
+        </section>
+
+        <!-- Problem Revisit section -->
+        <section id="problem-revisit" class="mb-24 animated-section">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-white glow-text-white">Our Focus: The Indoor "Last-Meter" Problem
+                </h2>
+                <p class="mt-4 text-lg text-gray-400 max-w-3xl mx-auto">If light can solve massive outdoor challenges,
+                    its potential for precise indoor applications is even greater.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <div class="bg-gray-800 border border-gray-700 p-8 rounded-xl shadow-lg section-glow"
+                    style="--glow-color: rgba(255, 255, 255, 0.1);">
+                    <h3 class="text-2xl font-bold text-white mb-4 glow-text-white">Logistics & Warehousing</h3>
+                    <p class="text-gray-400">Inefficient automation, high operational costs, and vulnerability to RF
+                        signal interference plague warehouses. The lack of accurate indoor positioning is a major
+                        bottleneck.</p>
+                    <div class="mt-6">
+                        <div class="chart-container mx-auto h-[30vh] md:h-[35vh]">
+                            <canvas id="logisticsProblemChart"></canvas>
+                        </div>
+                        <p class="text-center text-sm text-gray-500 mt-2">Key pain points ranked by operational impact.
+                        </p>
+                    </div>
+                </div>
+                <div class="bg-gray-800 border border-gray-700 p-8 rounded-xl shadow-lg section-glow"
+                    style="--glow-color: rgba(255, 255, 255, 0.1);">
+                    <h3 class="text-2xl font-bold text-white mb-4 glow-text-white">Museums & Cultural Spaces</h3>
+                    <p class="text-gray-400">Visitor engagement is often static and non-interactive. Securely delivering
+                        exclusive digital content to create personalized journeys remains a significant challenge.</p>
+                    <div class="mt-6">
+                        <div class="chart-container mx-auto h-[30vh] md:h-[35vh]">
+                            <canvas id="museumProblemChart"></canvas>
+                        </div>
+                        <p class="text-center text-sm text-gray-500 mt-2">Factors limiting visitor engagement.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Lighcon Intro section -->
+        <section id="lighcon-intro" class="mb-24 animated-section">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-white glow-text-white">Introducing Lighcon: A Platform for Indoor
+                    Guidance</h2>
+                <p class="mt-4 text-lg text-gray-400 max-w-3xl mx-auto">Lighcon is our platform solution, applying the
+                    power of Li-Fi to these indoor challenges with two powerful applications.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-stretch">
+                <div class="bg-gray-800 border border-gray-700 p-8 rounded-xl shadow-lg section-glow"
+                    style="--glow-color: rgba(255, 255, 255, 0.1);">
+                    <h3 class="text-2xl font-bold text-white mb-6 glow-text-white">For Warehouses: Laser Grid Navigation
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="flow-box"><span class="text-3xl">🛰️</span>
+                            <h4 class="font-bold mt-2 text-white">Encrypted Command</h4>
+                            <p class="text-sm text-gray-400">"Go to R5, C9"</p>
+                        </div>
+                        <div class="text-center flow-arrow">↓</div>
+                        <div class="flow-box"><span class="text-3xl">💡</span>
+                            <h4 class="font-bold mt-2 text-white">Laser Grid Navigation</h4>
+                            <p class="text-sm text-gray-400">Drone follows light beams to coordinate</p>
+                        </div>
+                        <div class="text-center flow-arrow">↓</div>
+                        <div class="flow-box"><span class="text-3xl">📦</span>
+                            <h4 class="font-bold mt-2 text-white">Action Executed</h4>
+                            <p class="text-sm text-gray-400">Drone performs pick/place action</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-800 border border-gray-700 p-8 rounded-xl shadow-lg section-glow"
+                    style="--glow-color: rgba(255, 255, 255, 0.1);">
+                    <h3 class="text-2xl font-bold text-white mb-6 glow-text-white">For Museums: Interactive Viewer</h3>
+                    <div class="space-y-4">
+                        <div class="flow-box"><span class="text-3xl">🏛️</span>
+                            <h4 class="font-bold mt-2 text-white">Exhibit Transmitter</h4>
+                            <p class="text-sm text-gray-400">Sends encrypted story via light</p>
+                        </div>
+                        <div class="text-center flow-arrow">↓</div>
+                        <div class="flow-box"><span class="text-3xl">📱</span>
+                            <h4 class="font-bold mt-2 text-white">Viewer Receives Signal</h4>
+                            <p class="text-sm text-gray-400">Photodiode captures light pulses</p>
+                        </div>
+                        <div class="text-center flow-arrow">↓</div>
+                        <div class="flow-box"><span class="text-3xl">📜</span>
+                            <h4 class="font-bold mt-2 text-white">Content Revealed</h4>
+                            <p class="text-sm text-gray-400">Secret story is decrypted and displayed</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Prototype Video Section -->
+        <section id="prototype-video" class="mb-24 animated-section">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-white glow-text-white">Project Prototype</h2>
+                <p class="mt-4 text-lg text-gray-400 max-w-3xl mx-auto">See our technology in action. This video
+                    demonstrates the core functionality of the Lighcon platform.</p>
+            </div>
+            <div class="bg-gray-800 border border-gray-700 p-4 rounded-xl shadow-lg max-w-4xl mx-auto section-glow"
+                style="--glow-color: rgba(255, 255, 255, 0.1);">
+                <div class="aspect-w-16 aspect-h-9 bg-black rounded-lg flex items-center justify-center">
+                    <!-- Replace this div with your iframe embed code -->
+                    <div class="text-center">
+                        <svg class="w-24 h-24 text-gray-500" fill="currentColor" viewBox="0 0 20 20"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                                clip-rule="evenodd"></path>
+                        </svg>
+                        <p class="text-gray-400 mt-4">Prototype Video Coming Soon</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- How It Works Section -->
+        <section id="how-it-works" class="mb-24 animated-section">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-white glow-text-white">How It Works: The Technology Stack</h2>
+                <p class="mt-4 text-lg text-gray-400 max-w-3xl mx-auto">A simplified look at the components that power
+                    the Lighcon platform, from data input to secure reception.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <!-- Transmitter Side -->
+                <div class="bg-gray-800 border border-gray-700 p-8 rounded-xl shadow-lg section-glow"
+                    style="--glow-color: rgba(255, 255, 255, 0.1);">
+                    <h3 class="text-2xl font-bold text-white mb-6 text-center glow-text-white">Transmitter Pipeline</h3>
+                    <div class="space-y-4">
+                        <div class="flow-box"><span class="text-2xl">📥</span>
+                            <h4 class="font-bold mt-2 text-white">Data Input</h4>
+                        </div>
+                        <div class="text-center flow-arrow">↓</div>
+                        <div class="flow-box"><span class="text-2xl">🔐</span>
+                            <h4 class="font-bold mt-2 text-white">Encryption Module</h4>
+                        </div>
+                        <div class="text-center flow-arrow">↓</div>
+                        <div class="flow-box"><span class="text-2xl">💡</span>
+                            <h4 class="font-bold mt-2 text-white">LED Driver</h4>
+                        </div>
+                        <div class="text-center flow-arrow">↓</div>
+                        <div class="flow-box"><span class="text-2xl">✨</span>
+                            <h4 class="font-bold mt-2 text-white">Modulated LED</h4>
+                        </div>
+                    </div>
+                </div>
+                <!-- Receiver Side -->
+                <div class="bg-gray-800 border border-gray-700 p-8 rounded-xl shadow-lg section-glow"
+                    style="--glow-color: rgba(255, 255, 255, 0.1);">
+                    <h3 class="text-2xl font-bold text-white mb-6 text-center glow-text-white">Receiver Pipeline</h3>
+                    <div class="space-y-4">
+                        <div class="flow-box"><span class="text-2xl">📸</span>
+                            <h4 class="font-bold mt-2 text-white">Photodiode Sensor</h4>
+                        </div>
+                        <div class="text-center flow-arrow">↓</div>
+                        <div class="flow-box"><span class="text-2xl">🔊</span>
+                            <h4 class="font-bold mt-2 text-white">Signal Amplifier</h4>
+                        </div>
+                        <div class="text-center flow-arrow">↓</div>
+                        <div class="flow-box"><span class="text-2xl">🔓</span>
+                            <h4 class="font-bold mt-2 text-white">Demodulation & Decryption</h4>
+                        </div>
+                        <div class="text-center flow-arrow">↓</div>
+                        <div class="flow-box"><span class="text-2xl">📤</span>
+                            <h4 class="font-bold mt-2 text-white">Data Output</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Validation section -->
+        <section id="validation" class="mb-24 animated-section">
+            <div class="bg-gray-800 border border-gray-700 p-10 rounded-xl shadow-lg text-center section-glow"
+                style="--glow-color: rgba(255, 255, 255, 0.1);">
+                <h3 class="text-2xl font-bold text-white glow-text-white">Research Links & Validation</h3>
+                <p class="mt-4 text-gray-400 max-w-4xl mx-auto">This isn't science fiction. <strong>Google's Project
+                        Taara</strong> uses this exact principle to deliver fiber-like internet across rivers and urban
+                    gaps. They solve the "last-mile" problem outdoors. This proves the core technology is powerful,
+                    viable, and scalable.</p>
+                <div class="mt-8 flex flex-wrap justify-center gap-4">
+                    <a href="https://x.company/projects/taara/" target="_blank"
+                        class="inline-block bg-white text-gray-900 font-bold py-3 px-6 rounded-lg shadow-md hover:bg-gray-200 transition-colors duration-300">
+                        🌐 Visit Project Taara
+                    </a>
+                    <a href="https://www.youtube.com/watch?v=Fe_g_s_q_vI" target="_blank"
+                        class="inline-block bg-gray-700 text-white border border-gray-600 font-bold py-3 px-6 rounded-lg shadow-md hover:bg-gray-600 transition-colors duration-300">
+                        ▶️ Watch the Video
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Updated Footer with new Carousel -->
+        <footer class="text-center mt-20 pt-10 border-t border-gray-700">
+            <div class="mb-12 animated-section">
+                <h3 class="text-3xl font-bold text-white mb-8 glow-text-white">Project Developed By</h3>
+
+                <div class="carousel-container">
+                    <div class="carousel">
+                        <!-- Profile Cards -->
+                        <div class="carousel-card">
+                            <img src="./assets/img2.jpg" alt="Team Member 1"
+                                class="w-28 h-28 rounded-full border-4 border-white object-cover mr-6">
+                            <div class="text-left">
+                                <h4 class="font-bold text-lg text-white">Harini K</h4>
+                                <p class="text-gray-400">Research & Development</p>
+                                <p class="text-gray-500 text-sm">B.Sc CS with AI <br>Rathinam
+                                    Institutions</p>
+                            </div>
+                        </div>
+                        <div class="carousel-card">
+                            <img src="./assets/img4.jpg" alt="Team Member 2"
+                                class="w-28 h-28 rounded-full border-4 border-white object-cover mr-6">
+                            <div class="text-left">
+                                <h4 class="font-bold text-lg text-white">Bhubana N</h4>
+                                <p class="text-gray-400">Human Resourse & Analysis</p>
+                                <p class="text-gray-500 text-sm">B.Sc CS with AI <br>Rathinam
+                                    Institutions</p>
+                            </div>
+                        </div>
+                        <div class="carousel-card">
+                            <img src="./assets/img1.jpg" alt="Team Member 3"
+                                class="w-28 h-28 rounded-full border-4 border-white object-cover mr-6">
+                            <div class="text-left">
+                                <h4 class="font-bold text-lg text-white">Dhina GS</h4>
+                                <p class="text-gray-400">Back-End & Cryptography (Python)</p>
+                                <p class="text-gray-500 text-sm"> B.Sc CS with CyberSecurity <br>Rathinam Institutions
+                                </p>
+                            </div>
+                        </div>
+                        <div class="carousel-card">
+                            <img src="./assets/img3.jpg" alt="Team Member 4"
+                                class="w-28 h-28 rounded-full border-4 border-white object-cover mr-6">
+                            <div class="text-left">
+                                <h4 class="font-bold text-lg text-white">Harish Rohith S</h4>
+                                <p class="text-gray-400">IoT Architect</p>
+                                <p class="text-gray-500 text-sm">B.Sc Computer Technology <br>Rathinam Institutions</p>
+                            </div>
+                        </div>
+                        <div class="carousel-card">
+                            <img src="./assets/img5.jpg" alt="Team Member 5"
+                                class="w-28 h-28 rounded-full border-4 border-white object-cover mr-6">
+                            <div class="text-left">
+                                <h4 class="font-bold text-lg text-white">Karthikeyan T</h4>
+                                <p class="text-gray-400">Back-End (Embedded-C)</p>
+                                <p class="text-gray-500 text-sm">B.Sc CS with AI <br>Rathinam
+                                    Institutions</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-nav">
+                        <div class="carousel-dots"></div>
+                    </div>
+                </div>
+            </div>
+
+            <p class="text-2xl font-bold text-white glow-text-white">Lighcon: Guiding the Future of Indoor Spaces.</p>
+            <p class="text-gray-400 mt-3">A versatile platform ready to bring secure automation and interactive
+                experiences to any indoor environment.</p>
+        </footer>
+
+    </div>
+
+    <script>
+        // --- Chart.js and Animation Logic ---
+        const chartInstances = {};
+        const wrapLabel = (label) => {
+            const maxLength = 16;
+            if (label.length <= maxLength) return label;
+            const words = label.split(' ');
+            const lines = [];
+            let currentLine = '';
+            for (const word of words) {
+                if ((currentLine + ' ' + word).trim().length > maxLength) {
+                    lines.push(currentLine.trim());
+                    currentLine = word;
+                } else {
+                    currentLine = (currentLine + ' ' + word).trim();
+                }
+            }
+            if (currentLine) lines.push(currentLine.trim());
+            return lines;
+        };
+        const tooltipTitleCallback = (tooltipItems) => {
+            const item = tooltipItems[0];
+            let label = item.chart.data.labels[item.dataIndex];
+            return Array.isArray(label) ? label.join(' ') : label;
+        };
+
+        // --- White/Gray Palette for Charts ---
+        const chartPalette = {
+            primary: '#FFFFFF',
+            secondary: '#D1D5DB',
+            accent1: '#9CA3AF',
+            accent2: '#6B7280',
+            text: '#D1D5DB'
+        };
+
+        const createGradient = (ctx, colors) => {
+            if (!ctx) return null;
+            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, colors[0]);
+            gradient.addColorStop(1, colors[1]);
+            return gradient;
+        };
+
+        const chartConfigs = {
+            logisticsProblemChart: {
+                type: 'bar',
+                data: {
+                    labels: ['RF Signal Interference', 'High Operational Costs', 'Inefficient Automation', 'Inaccurate Tracking'].map(wrapLabel),
+                    datasets: [{
+                        label: 'Impact Score',
+                        data: [85, 90, 75, 80],
+                        backgroundColor: [chartPalette.primary, chartPalette.secondary, chartPalette.accent1, chartPalette.accent2],
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+                    plugins: { legend: { display: false }, tooltip: { callbacks: { title: tooltipTitleCallback } } },
+                    scales: {
+                        x: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: '#9CA3AF' } },
+                        y: { grid: { display: false }, ticks: { color: chartPalette.text } }
+                    }
+                }
+            },
+            museumProblemChart: {
+                type: 'doughnut',
+                data: {
+                    labels: ['Static Exhibits', 'Not Personalized', 'Insecure Content'].map(wrapLabel),
+                    datasets: [{
+                        label: 'Engagement Limiters',
+                        data: [55, 30, 15],
+                        backgroundColor: [chartPalette.primary, chartPalette.accent1, chartPalette.accent2],
+                        hoverOffset: 8,
+                        borderColor: '#111827'
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false, cutout: '60%',
+                    plugins: {
+                        legend: { position: 'bottom', labels: { color: chartPalette.text } },
+                        tooltip: { callbacks: { title: tooltipTitleCallback } }
+                    }
+                }
+            },
+            ruralProblemChart: {
+                type: 'bar',
+                data: {
+                    labels: ['Laying Fiber Cables', 'Building Cell Towers', 'Li-Fi Links'].map(wrapLabel),
+                    datasets: [{
+                        label: 'Relative Cost & Difficulty',
+                        data: [95, 80, 25],
+                        backgroundColor: [chartPalette.accent2, chartPalette.accent1, chartPalette.primary],
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false }, tooltip: { callbacks: { title: tooltipTitleCallback } } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: '#9CA3AF' } },
+                        x: { grid: { display: false }, ticks: { color: chartPalette.text } }
+                    }
+                }
+            }
+        };
+        const createChart = (canvasId) => {
+            if (!chartConfigs[canvasId]) return;
+            const ctx = document.getElementById(canvasId)?.getContext('2d');
+            if (!ctx) return;
+            if (chartInstances[canvasId]) chartInstances[canvasId].destroy();
+            chartInstances[canvasId] = new Chart(ctx, chartConfigs[canvasId]);
+        };
+        const animatedElements = document.querySelectorAll('.animated-section, canvas');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    if (entry.target.tagName === 'CANVAS' && entry.target.id) {
+                        createChart(entry.target.id);
+                    } else {
+                        entry.target.classList.add('is-visible');
+                    }
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+        animatedElements.forEach(el => observer.observe(el));
+
+        // --- Carousel JavaScript ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const carousel = document.querySelector('.carousel');
+            const cards = document.querySelectorAll('.carousel-card');
+            const dotsContainer = document.querySelector('.carousel-dots');
+
+            let currentIndex = 0;
+            const totalCards = cards.length;
+            let autoScrollInterval;
+
+            for (let i = 0; i < totalCards; i++) {
+                const dot = document.createElement('div');
+                dot.classList.add('carousel-dot');
+                dot.dataset.index = i;
+                dotsContainer.appendChild(dot);
+            }
+            const dots = document.querySelectorAll('.carousel-dot');
+
+            function updateCarousel() {
+                cards.forEach((card, index) => {
+                    card.classList.remove('active', 'prev', 'next', 'far-prev', 'far-next');
+                    let diff = index - currentIndex;
+                    if (Math.abs(diff) > totalCards / 2) {
+                        diff = diff > 0 ? diff - totalCards : diff + totalCards;
+                    }
+                    if (diff === 0) card.classList.add('active');
+                    else if (diff === 1) card.classList.add('next');
+                    else if (diff === -1) card.classList.add('prev');
+                    else if (diff > 1) card.classList.add('far-next');
+                    else if (diff < -1) card.classList.add('far-prev');
+                });
+                dots.forEach((dot, index) => dot.classList.toggle('active', index === currentIndex));
+            }
+
+            function goToNext() {
+                currentIndex = (currentIndex + 1) % totalCards;
+                updateCarousel();
+            }
+
+            function goToPrev() {
+                currentIndex = (currentIndex - 1 + totalCards) % totalCards;
+                updateCarousel();
+            }
+
+            function resetInterval() {
+                clearInterval(autoScrollInterval);
+                autoScrollInterval = setInterval(goToNext, 3000);
+            }
+
+            cards.forEach(card => {
+                card.addEventListener('click', () => {
+                    if (card.classList.contains('next')) {
+                        goToNext();
+                        resetInterval();
+                    } else if (card.classList.contains('prev')) {
+                        goToPrev();
+                        resetInterval();
+                    }
+                });
+            });
+
+            dotsContainer.addEventListener('click', (e) => {
+                if (e.target.classList.contains('carousel-dot')) {
+                    currentIndex = parseInt(e.target.dataset.index);
+                    updateCarousel();
+                    resetInterval();
+                }
+            });
+
+            carousel.addEventListener('mouseenter', () => clearInterval(autoScrollInterval));
+            carousel.addEventListener('mouseleave', () => resetInterval());
+
+            updateCarousel();
+            resetInterval();
+        });
+
+        // --- Background Animation JavaScript ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const laserLeft = document.getElementById('laser-progress-bar-left');
+            const laserRight = document.getElementById('laser-progress-bar-right');
+            const binaryContainers = document.querySelectorAll('.binary-container');
+            const blastEffects = document.querySelectorAll('.blast-effect');
+            const laserTips = document.querySelectorAll('.laser-tip');
+            const numBinaryChars = 150;
+
+            // Populate binary containers
+            binaryContainers.forEach(container => {
+                let content = '';
+                for (let i = 0; i < numBinaryChars; i++) {
+                    content += `${Math.round(Math.random())}<br>`;
+                }
+                container.innerHTML = `<div class="binary-stream-content">${content}${content}</div>`;
+            });
+
+            let maxScrollPercent = 0;
+            let animationIsDone = false;
+            let blastTriggered = false;
+
+            function handleScroll() {
+                const scrollTop = window.scrollY;
+                const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+                const scrollPercent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+
+                maxScrollPercent = Math.max(maxScrollPercent, scrollPercent);
+
+                if (animationIsDone) {
+                    const finalHeight = `${maxScrollPercent}%`;
+                    laserLeft.style.height = finalHeight;
+                    laserRight.style.height = finalHeight;
+                }
+
+                // Trigger blast effect at the end
+                if (maxScrollPercent >= 99.9 && !blastTriggered) {
+                    blastTriggered = true;
+                    blastEffects.forEach(blast => blast.classList.add('active'));
+                    laserTips.forEach(tip => tip.classList.add('hidden'));
+                }
+            }
+
+            function onAnimationEnd() {
+                animationIsDone = true;
+                const initialPercent = 75;
+
+                const scrollTop = window.scrollY;
+                const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+                const currentScrollPercent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+
+                maxScrollPercent = Math.max(initialPercent, currentScrollPercent);
+
+                const initialHeight = `${maxScrollPercent}%`;
+                laserLeft.style.height = initialHeight;
+                laserRight.style.height = initialHeight;
+
+                laserLeft.classList.remove('laser-initial-animation');
+                laserRight.classList.remove('laser-initial-animation');
+
+                laserLeft.removeEventListener('animationend', onAnimationEnd);
+            }
+
+            laserLeft.classList.add('laser-initial-animation');
+            laserRight.classList.add('laser-initial-animation');
+            laserLeft.addEventListener('animationend', onAnimationEnd);
+            window.addEventListener('scroll', handleScroll);
+        });
+
+    </script>
+</body>
+
+</html>
