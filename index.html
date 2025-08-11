@@ -80,7 +80,8 @@
 
         .carousel {
             position: relative;
-            width: 400px;
+            width: 100%;
+            max-width: 400px;
             height: 260px;
             transform-style: preserve-3d;
             transition: transform 0.5s;
@@ -88,7 +89,7 @@
 
         .carousel-card {
             position: absolute;
-            width: 400px;
+            width: 100%;
             height: 230px;
             top: 15px;
             left: 0;
@@ -112,27 +113,27 @@
         }
 
         .carousel-card.next {
-            transform: translateX(220px) translateZ(-120px) rotateY(-25deg);
+            transform: translateX(55%) translateZ(-120px) rotateY(-25deg);
             opacity: 0.7;
             filter: blur(2px);
             cursor: pointer;
         }
         
         .carousel-card.prev {
-            transform: translateX(-220px) translateZ(-120px) rotateY(25deg);
+            transform: translateX(-55%) translateZ(-120px) rotateY(25deg);
             opacity: 0.7;
             filter: blur(2px);
             cursor: pointer;
         }
 
         .carousel-card.far-next {
-            transform: translateX(320px) translateZ(-300px) rotateY(-35deg);
+            transform: translateX(80%) translateZ(-300px) rotateY(-35deg);
             opacity: 0;
             filter: blur(4px);
         }
         
         .carousel-card.far-prev {
-            transform: translateX(-320px) translateZ(-300px) rotateY(35deg);
+            transform: translateX(-80%) translateZ(-300px) rotateY(35deg);
             opacity: 0;
             filter: blur(4px);
         }
@@ -172,14 +173,7 @@
             box-shadow: 0 0 15px 5px rgba(255, 255, 255, 0.3), 0 0 25px 10px rgba(255, 255, 255, 0.2);
             z-index: 0;
             overflow: visible;
-        }
-
-        #laser-progress-bar-left {
-            left: 30px;
-        }
-
-        #laser-progress-bar-right {
-            right: 30px;
+            transition: left 0.3s, right 0.3s; /* Smooth position change */
         }
 
         .laser-initial-animation {
@@ -280,6 +274,27 @@
             100% {
                 transform: translateX(-50%) scale(15);
                 opacity: 0;
+            }
+        }
+
+        /* Responsive adjustments for laser on smaller screens */
+        @media (max-width: 768px) {
+            .laser-progress-bar {
+                width: 15px;
+            }
+            .laser-tip {
+                width: 15px;
+                height: 15px;
+                bottom: -7.5px;
+            }
+            .binary-stream-content {
+                font-size: 10px;
+                line-height: 1.2;
+            }
+            .blast-effect {
+                bottom: -12.5px;
+                width: 25px;
+                height: 25px;
             }
         }
     </style>
@@ -488,7 +503,7 @@
             </div>
             <div class="bg-gray-800 border border-gray-700 p-8 rounded-xl shadow-lg max-w-4xl mx-auto section-glow" style="--glow-color: rgba(255, 255, 255, 0.1);">
                 <p class="text-gray-300 text-left md:text-center leading-relaxed">
-                    Our custom algorithm, <strong>enSed</strong>, forms the core of our security. Instead of standard methods, we convert text messages into a series of numerical matrices. These matrices are then multiplied by a secret, non-singular matrix key. The resulting matrix is flattened into a string of numbers, which is the encrypted data transmitted by the light.
+                    Our custom algorithm, **enSed**, forms the core of our security. Instead of standard methods, we convert text messages into a series of numerical matrices. These matrices are then multiplied by a secret, non-singular matrix key. The resulting matrix is flattened into a string of numbers, which is the encrypted data transmitted by the light.
                     <br><br>
                     To decrypt, the receiver uses the mathematical inverse of the original key. Multiplying the received data by this inverse key reverses the process, perfectly restoring the original message. This method ensures that without the exact inverse matrix, the intercepted data remains a meaningless stream of numbers.
                 </p>
@@ -513,7 +528,7 @@
              <div class="bg-gray-800 border border-gray-700 p-10 rounded-xl shadow-lg text-center section-glow"
                 style="--glow-color: rgba(255, 255, 255, 0.1);">
                 <h3 class="text-2xl font-bold text-white glow-text-white">Research Links & Validation</h3>
-                <p class="mt-4 text-gray-400 max-w-4xl mx-auto">This isn't science fiction. <strong>Google's Project
+                <p class="mt-4 text-gray-400 max-w-4xl mx-auto">This isn't science fiction. <strong class="text-white">Google's Project
                         Taara</strong> uses this exact principle to deliver fiber-like internet across rivers and urban
                     gaps. They solve the "last-mile" problem outdoors. This proves the core technology is powerful,
                     viable, and scalable.</p>
@@ -816,6 +831,7 @@
 
         // --- Background Animation JavaScript ---
         document.addEventListener('DOMContentLoaded', () => {
+            const mainContainer = document.querySelector('.container');
             const laserLeft = document.getElementById('laser-progress-bar-left');
             const laserRight = document.getElementById('laser-progress-bar-right');
             const binaryContainers = document.querySelectorAll('.binary-container');
@@ -823,6 +839,22 @@
             const laserTips = document.querySelectorAll('.laser-tip');
             const numBinaryChars = 150;
 
+            function positionLasers() {
+                const containerRect = mainContainer.getBoundingClientRect();
+                const gutter = containerRect.left;
+                const laserWidth = laserLeft.offsetWidth;
+
+                if (gutter < (laserWidth + 20)) { // Hide if not enough space
+                    laserLeft.style.display = 'none';
+                    laserRight.style.display = 'none';
+                } else {
+                    laserLeft.style.display = 'block';
+                    laserRight.style.display = 'block';
+                    laserLeft.style.left = `${(gutter / 2) - (laserWidth / 2)}px`;
+                    laserRight.style.right = `${(gutter / 2) - (laserWidth / 2)}px`;
+                }
+            }
+            
             // Populate binary containers
             binaryContainers.forEach(container => {
                 let content = '';
@@ -881,6 +913,8 @@
             laserRight.classList.add('laser-initial-animation');
             laserLeft.addEventListener('animationend', onAnimationEnd);
             window.addEventListener('scroll', handleScroll);
+            window.addEventListener('resize', positionLasers);
+            positionLasers(); // Initial positioning
         });
 
     </script>
