@@ -76,6 +76,8 @@
             align-items: center;
             flex-direction: column;
             padding: 1rem 0;
+            width: 100%;
+            overflow-x: hidden;
         }
 
         .carousel {
@@ -100,7 +102,7 @@
             transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out, filter 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
             display: flex;
             align-items: center;
-            padding: 1.5rem;
+            padding: 1rem;
             box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
         }
 
@@ -173,7 +175,14 @@
             box-shadow: 0 0 15px 5px rgba(255, 255, 255, 0.3), 0 0 25px 10px rgba(255, 255, 255, 0.2);
             z-index: 0;
             overflow: visible;
-            transition: left 0.3s, right 0.3s; /* Smooth position change */
+        }
+
+        #laser-progress-bar-left {
+            left: 1rem;
+        }
+
+        #laser-progress-bar-right {
+            right: 1rem;
         }
 
         .laser-initial-animation {
@@ -318,17 +327,17 @@
         <header class="relative text-center py-20 md:py-32 mb-16 rounded-lg border border-gray-700 section-glow"
             style="--glow-color: rgba(255, 255, 255, 0.05);">
             <div class="relative">
-                <h1 class="text-4xl md:text-6xl font-black text-white glow-text-white leading-tight">What if the light
+                <h1 class="text-3xl sm:text-4xl md:text-6xl font-black text-white glow-text-white leading-tight">What if the light
                     above you could send data?</h1>
-                <p class="text-lg md:text-xl font-semibold text-gray-300 mt-6 max-w-3xl mx-auto">Imagine internet that’s
+                <p class="text-base sm:text-lg md:text-xl font-semibold text-gray-300 mt-6 max-w-3xl mx-auto">Imagine internet that’s
                     faster, more secure, and immune to interference — all from the lamps in your room.</p>
             </div>
         </header>
 
         <section id="what-is-lifi" class="mb-24 animated-section">
             <div class="text-center mb-16">
-                <h2 class="text-4xl font-bold text-white glow-text-white">LiFi Technology - Faster, Safer, Smarter Connectivity</h2>
-                <p class="mt-4 text-lg text-gray-400 max-w-3xl mx-auto">Li-Fi, or Light Fidelity, is a revolutionary
+                <h2 class="text-3xl sm:text-4xl font-bold text-white glow-text-white">LiFi Technology - Faster, Safer, Smarter Connectivity</h2>
+                <p class="mt-4 text-base sm:text-lg text-gray-400 max-w-3xl mx-auto">Li-Fi, or Light Fidelity, is a revolutionary
                     wireless technology that transmits data using light, turning every light source into a potential
                     ultra-fast, secure internet router.</p>
             </div>
@@ -360,8 +369,8 @@
 
         <section id="benefits" class="mb-24 animated-section">
             <div class="text-center mb-16">
-                <h2 class="text-4xl font-bold text-white glow-text-white">The Benefits of Li-Fi Technology</h2>
-                <p class="mt-4 text-lg text-gray-400 max-w-3xl mx-auto">Li-Fi offers transformative advantages over
+                <h2 class="text-3xl sm:text-4xl font-bold text-white glow-text-white">The Benefits of Li-Fi Technology</h2>
+                <p class="mt-4 text-base sm:text-lg text-gray-400 max-w-3xl mx-auto">Li-Fi offers transformative advantages over
                     traditional wireless technologies like Wi-Fi.</p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
@@ -391,8 +400,8 @@
 
         <section id="real-world-problem" class="mb-24 animated-section">
             <div class="text-center mb-16">
-                <h2 class="text-4xl font-bold text-white glow-text-white">The Big Picture: A Global Challenge</h2>
-                <p class="mt-4 text-lg text-gray-400 max-w-3xl mx-auto">Li-Fi technology is powerful enough to tackle
+                <h2 class="text-3xl sm:text-4xl font-bold text-white glow-text-white">The Big Picture: A Global Challenge</h2>
+                <p class="mt-4 text-base sm:text-lg text-gray-400 max-w-3xl mx-auto">Li-Fi technology is powerful enough to tackle
                     massive, real-world infrastructure problems.</p>
             </div>
             <div class="bg-gray-800 border border-gray-700 p-8 rounded-xl shadow-lg section-glow"
@@ -409,9 +418,9 @@
         
         <section id="problem-revisit" class="mb-24 animated-section">
             <div class="text-center mb-16">
-                <h2 class="text-4xl font-bold text-white glow-text-white">Our Focus: The Indoor "Last-Meter" Problem
+                <h2 class="text-3xl sm:text-4xl font-bold text-white glow-text-white">Our Focus: The Indoor "Last-Meter" Problem
                 </h2>
-                <p class="mt-4 text-lg text-gray-400 max-w-3xl mx-auto">If light can solve massive outdoor challenges,
+                <p class="mt-4 text-base sm:text-lg text-gray-400 max-w-3xl mx-auto">If light can solve massive outdoor challenges,
                     its potential for precise indoor applications is even greater.</p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
@@ -446,9 +455,9 @@
 
         <section id="lighcon-intro" class="mb-24 animated-section">
             <div class="text-center mb-16">
-                <h2 class="text-4xl font-bold text-white glow-text-white">Introducing Lighcon: A Platform for Indoor
+                <h2 class="text-3xl sm:text-4xl font-bold text-white glow-text-white">Introducing Lighcon: A Platform for Indoor
                     Guidance</h2>
-                <p class="mt-4 text-lg text-gray-400 max-w-3xl mx-auto">Lighcon is our platform solution, applying the
+                <p class="mt-4 text-base sm:text-lg text-gray-400 max-w-3xl mx-auto">Lighcon is our platform solution, applying the
                     power of Li-Fi to these indoor challenges with two powerful applications.</p>
             </div>
              <div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-stretch">
@@ -498,8 +507,8 @@
         
         <section id="encryption" class="mb-24 animated-section">
             <div class="text-center mb-16">
-                <h2 class="text-4xl font-bold text-white glow-text-white">Our Encryption: enSed</h2>
-                <p class="mt-4 text-lg text-gray-400 max-w-3xl mx-auto">We use a custom matrix-based encryption library called "enSed" to ensure data is secure and meaningless without the correct decryption key.</p>
+                <h2 class="text-3xl sm:text-4xl font-bold text-white glow-text-white">Our Encryption: enSed</h2>
+                <p class="mt-4 text-base sm:text-lg text-gray-400 max-w-3xl mx-auto">We use a custom matrix-based encryption library called "enSed" to ensure data is secure and meaningless without the correct decryption key.</p>
             </div>
             <div class="bg-gray-800 border border-gray-700 p-8 rounded-xl shadow-lg max-w-4xl mx-auto section-glow" style="--glow-color: rgba(255, 255, 255, 0.1);">
                 <p class="text-gray-300 text-left md:text-center leading-relaxed">
@@ -512,8 +521,8 @@
         
         <section id="prototype-video" class="mb-24 animated-section">
             <div class="text-center mb-16">
-                <h2 class="text-4xl font-bold text-white glow-text-white">Project Prototype</h2>
-                <p class="mt-4 text-lg text-gray-400 max-w-3xl mx-auto">See our technology in action. This video
+                <h2 class="text-3xl sm:text-4xl font-bold text-white glow-text-white">Project Prototype</h2>
+                <p class="mt-4 text-base sm:text-lg text-gray-400 max-w-3xl mx-auto">See our technology in action. This video
                     demonstrates the core functionality of the Lighcon platform.</p>
             </div>
             <div class="bg-gray-800 border border-gray-700 p-4 rounded-xl shadow-lg max-w-4xl mx-auto section-glow"
@@ -566,56 +575,56 @@
 
         <footer class="text-center mt-20 pt-10 border-t border-gray-700">
             <div class="mb-12 animated-section">
-                <h3 class="text-3xl font-bold text-white mb-8 glow-text-white">Project Developed By</h3>
+                <h3 class="text-3xl sm:text-4xl font-bold text-white mb-8 glow-text-white">Project Developed By</h3>
 
                 <div class="carousel-container">
                     <div class="carousel">
                         <div class="carousel-card">
                             <img src="./assets/img2.jpg" alt="Team Member 1"
-                                class="w-28 h-28 rounded-full border-4 border-white object-cover mr-6">
+                                class="w-20 h-20 sm:w-28 sm:h-28 rounded-full border-4 border-white object-cover mr-4 sm:mr-6">
                             <div class="text-left">
-                                <h4 class="font-bold text-lg text-white">Harini K</h4>
-                                <p class="text-gray-400">Research & Development</p>
-                                <p class="text-gray-500 text-sm">B.Sc CS with AI <br>Rathinam
+                                <h4 class="font-bold text-base sm:text-lg text-white">Harini K</h4>
+                                <p class="text-gray-400 text-sm sm:text-base">Research & Development</p>
+                                <p class="text-gray-500 text-xs sm:text-sm">B.Sc CS with AI <br>Rathinam
                                     Institutions</p>
                             </div>
                         </div>
                         <div class="carousel-card">
                             <img src="./assets/img4.jpg" alt="Team Member 2"
-                                class="w-28 h-28 rounded-full border-4 border-white object-cover mr-6">
+                                class="w-20 h-20 sm:w-28 sm:h-28 rounded-full border-4 border-white object-cover mr-4 sm:mr-6">
                             <div class="text-left">
-                                <h4 class="font-bold text-lg text-white">Bhubana N</h4>
-                                <p class="text-gray-400">Human Resourse & Analysis</p>
-                                <p class="text-gray-500 text-sm">B.Sc CS with AI <br>Rathinam
+                                <h4 class="font-bold text-base sm:text-lg text-white">Bhubana N</h4>
+                                <p class="text-gray-400 text-sm sm:text-base">Human Resourse & Analysis</p>
+                                <p class="text-gray-500 text-xs sm:text-sm">B.Sc CS with AI <br>Rathinam
                                     Institutions</p>
                             </div>
                         </div>
                         <div class="carousel-card">
                             <img src="./assets/img1.jpg" alt="Team Member 3"
-                                class="w-28 h-28 rounded-full border-4 border-white object-cover mr-6">
+                                class="w-20 h-20 sm:w-28 sm:h-28 rounded-full border-4 border-white object-cover mr-4 sm:mr-6">
                             <div class="text-left">
-                                <h4 class="font-bold text-lg text-white">Dhina GS</h4>
-                                <p class="text-gray-400">Back-End & Cryptography (Python)</p>
-                                <p class="text-gray-500 text-sm"> B.Sc CS with CyberSecurity <br>Rathinam Institutions
+                                <h4 class="font-bold text-base sm:text-lg text-white">Dhina GS</h4>
+                                <p class="text-gray-400 text-sm sm:text-base">Back-End & Cryptography (Python)</p>
+                                <p class="text-gray-500 text-xs sm:text-sm"> B.Sc CS with CyberSecurity <br>Rathinam Institutions
                                 </p>
                             </div>
                         </div>
                         <div class="carousel-card">
                             <img src="./assets/img3.jpg" alt="Team Member 4"
-                                class="w-28 h-28 rounded-full border-4 border-white object-cover mr-6">
+                                class="w-20 h-20 sm:w-28 sm:h-28 rounded-full border-4 border-white object-cover mr-4 sm:mr-6">
                             <div class="text-left">
-                                <h4 class="font-bold text-lg text-white">Harish Rohith S</h4>
-                                <p class="text-gray-400">IoT Architect</p>
-                                <p class="text-gray-500 text-sm">B.Sc Computer Technology <br>Rathinam Institutions</p>
+                                <h4 class="font-bold text-base sm:text-lg text-white">Harish Rohith S</h4>
+                                <p class="text-gray-400 text-sm sm:text-base">IoT Architect</p>
+                                <p class="text-gray-500 text-xs sm:text-sm">B.Sc Computer Technology <br>Rathinam Institutions</p>
                             </div>
                         </div>
                         <div class="carousel-card">
                             <img src="./assets/img5.jpg" alt="Team Member 5"
-                                class="w-28 h-28 rounded-full border-4 border-white object-cover mr-6">
+                                class="w-20 h-20 sm:w-28 sm:h-28 rounded-full border-4 border-white object-cover mr-4 sm:mr-6">
                             <div class="text-left">
-                                <h4 class="font-bold text-lg text-white">Karthikeyan T</h4>
-                                <p class="text-gray-400">Back-End (Embedded-C)</p>
-                                <p class="text-gray-500 text-sm">B.Sc CS with AI <br>Rathinam
+                                <h4 class="font-bold text-base sm:text-lg text-white">Karthikeyan T</h4>
+                                <p class="text-gray-400 text-sm sm:text-base">Back-End (Embedded-C)</p>
+                                <p class="text-gray-500 text-xs sm:text-sm">B.Sc CS with AI <br>Rathinam
                                     Institutions</p>
                             </div>
                         </div>
@@ -626,7 +635,7 @@
                 </div>
             </div>
 
-            <p class="text-2xl font-bold text-white glow-text-white">Lighcon: Guiding the Future of Indoor Spaces.</p>
+            <p class="text-xl sm:text-2xl font-bold text-white glow-text-white">Lighcon: Guiding the Future of Indoor Spaces.</p>
             <p class="text-gray-400 mt-3">A versatile platform ready to bring secure automation and interactive
                 experiences to any indoor environment.</p>
         </footer>
