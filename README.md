@@ -6,8 +6,8 @@ It blends **modern web design**, **beautiful animations**, and **interactive cha
 ## 📂 Project Structure
 
 lighcon/
-├── index.html # 🌐 Main HTML structure
-└── README.md # 📄 Project documentation
+- index.html # 🌐 Main HTML structure
+- README.md # 📄 Project documentation
 
 ---
 
